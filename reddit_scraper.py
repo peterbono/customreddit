@@ -10,7 +10,7 @@ ACCESS_TOKEN = "eyJhbGciOiJSUzI1NiIsImtpZCI6IlNIQTI1NjpzS3dsMnlsV0VtMjVmcXhwTU40
 
 # Configurations des régions et subreddits
 regions = [
-    "Île-de-France", "Provence-Alpes-Côte d'Azur", "Auvergne-Rhône-Alpes",
+    "\u00cele-de-France", "Provence-Alpes-Côte d'Azur", "Auvergne-Rhône-Alpes",
     "Hauts-de-France", "Grand Est", "Occitanie", "Nouvelle-Aquitaine",
     "Bretagne", "Normandie", "Bourgogne-Franche-Comté", "Centre-Val de Loire",
     "Pays de la Loire", "Corse"
@@ -42,15 +42,19 @@ def search_reddit(query, subreddit):
 
 # Fonction pour rechercher via Pushshift (API tierce pour Reddit)
 def search_pushshift(region, keyword):
-    api = PushshiftAPI()
-    query = f"{keyword} {region}"
-    results = api.search_submissions(
-        q=query,
-        subreddit=None,
-        limit=100,
-        sort="desc"
-    )
-    return list(results)
+    try:
+        api = PushshiftAPI()
+        query = f"{keyword} {region}"
+        results = api.search_submissions(
+            q=query,
+            subreddit=None,
+            limit=100,
+            sort="desc"
+        )
+        return list(results)
+    except Exception as e:
+        print(f"Erreur lors de la connexion à Pushshift : {e}")
+        return []
 
 # Collecte des données par région
 def collect_data():
