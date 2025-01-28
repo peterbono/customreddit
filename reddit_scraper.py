@@ -1,6 +1,5 @@
 import requests
 import csv
-from psaw import PushshiftAPI
 
 # Configurations Reddit API
 CLIENT_ID = "YeScY2wdzpu22LBogcHpeQ"
@@ -40,22 +39,6 @@ def search_reddit(query, subreddit):
         print(f"Erreur pour {query} dans {subreddit} : {response.status_code}")
         return []
 
-# Fonction pour rechercher via Pushshift (API tierce pour Reddit)
-def search_pushshift(region, keyword):
-    try:
-        api = PushshiftAPI()
-        query = f"{keyword} {region}"
-        results = api.search_submissions(
-            q=query,
-            subreddit=None,
-            limit=100,
-            sort="desc"
-        )
-        return list(results)
-    except Exception as e:
-        print(f"Erreur lors de la connexion à Pushshift : {e}")
-        return []
-
 # Collecte des données par région
 def collect_data():
     data = {}
@@ -69,11 +52,6 @@ def collect_data():
                 query = f"{keyword} {region}"
                 results = search_reddit(query, subreddit=subreddit)
                 total_results += len(results)
-
-        # Recherche avec Pushshift
-        for keyword in keywords:
-            pushshift_results = search_pushshift(region, keyword)
-            total_results += len(pushshift_results)
 
         data[region] = total_results
         print(f"{region} : {total_results} résultats trouvés")
