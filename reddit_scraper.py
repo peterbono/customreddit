@@ -1,10 +1,16 @@
 import requests
 
-# Configurations Reddit API
-ACCESS_TOKEN = "eyJhbGciOiJSUzI1NiIsImtpZCI6IlNIQTI1NjpzS3dsMnlsV0VtMjVmcXhwTU40cWY4MXE2OWFFdWFyMnpLMUdhVGxjdWNZIiwidHlwIjoiSldUIn0.eyJzdWIiOiJsb2lkIiwiZXhwIjoxNzM4MTEyMDY1LjM1MjU2MiwiaWF0IjoxNzM4MDI1NjY1LjM1MjU2MiwianRpIjoia3dueGxSdXp0a1ZBaFZOd21zMjUxQnJ3SFRHQVVBIiwiY2lkIjoiWWVTY1kyd2R6cHUyMkxCb2djSHBlUSIsImxpZCI6InQyXzFpMjFrY25lZXgiLCJsY2EiOjE3MzgwMjU2NjUzNDAsInNjcCI6ImVKeUtWdEpTaWdVRUFBRF9fd056QVNjIiwiZmxvIjo2fQ.DWsmOrGIQAjHfLVGV-kfiq80EggaAqoSbja0rND5u-aUPwKHHvk1OmFgcDUBDLnZMqiStF8Zocjjj8hgVvVkckLRiSahgqe429aDCHI1rdEhWadnh4OCTElHX7wFYVUaJYW-lehQZYTQz99eOYJz3DxiWCB3BEwvNWYLmd8_q7z1WJqtrKoHKmcV8-54Ajq5A-lDytlv_zLkyFbikGQUAhYQkl7UtIXbDjgW1upHCEQJEmD0uXBABQFFTbSLJyujEhN02UsNWs75PItfOK-FNZI3ib3tsS4cjInOZELMVVvc8DlO6Zom-Hjgke-2bqStGpmmpDy6GzxAwjQu54jgFg"
-
+# Configuration API Reddit
+ACCESS_TOKEN = "VOTRE_ACCESS_TOKEN"
 USER_AGENT = "motousers/0.1 (by /u/YourRedditUsername)"
 
+# Liste des régions françaises
+regions = [
+    "Île-de-France", "Provence-Alpes-Côte d'Azur", "Auvergne-Rhône-Alpes", 
+    "Hauts-de-France", "Grand Est", "Occitanie", "Nouvelle-Aquitaine", 
+    "Bretagne", "Normandie", "Bourgogne-Franche-Comté", "Centre-Val de Loire", 
+    "Pays de la Loire", "Corse"
+]
 
 def search_reddit(query, subreddit="motorcycles"):
     url = f"https://oauth.reddit.com/r/{subreddit}/search"
@@ -13,12 +19,12 @@ def search_reddit(query, subreddit="motorcycles"):
         "User-Agent": USER_AGENT,
     }
     params = {
-        "q": query,        # Mot-clé de recherche
+        "q": query,         # Mot-clé de recherche
         "restrict_sr": "1", # Limiter au subreddit spécifié
-        "sort": "relevance",
+        "sort": "relevance"
     }
 
-    # Effectuer la recherche
+    # Effectuer la requête
     response = requests.get(url, headers=headers, params=params)
     
     if response.status_code == 200:
@@ -28,14 +34,17 @@ def search_reddit(query, subreddit="motorcycles"):
         print(f"Message retourné par Reddit : {response.text}")
         raise Exception(f"Failed to search Reddit: {response.status_code} - {response.text}")
 
+def collect_motard_data():
+    region_data = {}
+    for region in regions:
+        print(f"Recherche pour la région : {region}")
+        results = search_reddit(region)
+        region_data[region] = len(results)
+        print(f"Résultats pour {region} : {len(results)} posts trouvés")
+    return region_data
 
 if __name__ == "__main__":
-    query = "Paris"
-    try:
-        results = search_reddit(query)
-        print(f"Résultats trouvés : {len(results)}")
-        for post in results:
-            data = post["data"]
-            print(f"- {data['title']} (Score : {data['score']}, Commentaires : {data['num_comments']})")
-    except Exception as e:
-        print(f"Erreur : {e}")
+    data = collect_motard_data()
+    print("\nRésumé des données :")
+    for region, count in data.items():
+        print(f"{region} : {count} posts trouvés")
